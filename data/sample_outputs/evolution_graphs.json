@@ -1,0 +1,278 @@
+{
+  "user_1": {
+    "user_id": "user_1",
+    "nodes": [
+      {
+        "node_id": "user_1_1690000000",
+        "timestamp": "2025-08-01T10:00:00Z",
+        "bio_score": 72,
+        "cognitive_state": "low-focus",
+        "intervention": "Start morning meditation + turmeric supplement",
+        "result": "Slight improvement in focus",
+        "confidence": 0.75,
+        "feedback": "Feeling more clear-headed after a week",
+        "biometrics": {
+          "energy_level": 0.65,
+          "focus_score": 0.58,
+          "stress_level": 0.72,
+          "sleep_quality": 0.68,
+          "inflammation_markers": 0.45,
+          "metabolic_score": 0.70
+        }
+      },
+      {
+        "node_id": "user_1_1690086400",
+        "timestamp": "2025-08-02T10:00:00Z",
+        "bio_score": 75,
+        "cognitive_state": "improving",
+        "intervention": "Add 16/8 intermittent fasting",
+        "result": "Mixed results - good energy but some hunger",
+        "confidence": 0.82,
+        "feedback": "Fasting is challenging but manageable",
+        "biometrics": {
+          "energy_level": 0.70,
+          "focus_score": 0.65,
+          "stress_level": 0.68,
+          "sleep_quality": 0.72,
+          "inflammation_markers": 0.42,
+          "metabolic_score": 0.73
+        }
+      },
+      {
+        "node_id": "user_1_1690172800",
+        "timestamp": "2025-08-03T10:00:00Z",
+        "bio_score": 78,
+        "cognitive_state": "optimal",
+        "intervention": "Cold shower therapy + breathwork",
+        "result": "Significant energy boost",
+        "confidence": 0.88,
+        "feedback": "Really feeling the benefits now",
+        "biometrics": {
+          "energy_level": 0.78,
+          "focus_score": 0.72,
+          "stress_level": 0.60,
+          "sleep_quality": 0.75,
+          "inflammation_markers": 0.38,
+          "metabolic_score": 0.76
+        }
+      },
+      {
+        "node_id": "user_1_1690259200",
+        "timestamp": "2025-08-04T10:00:00Z",
+        "bio_score": 82,
+        "cognitive_state": "peak",
+        "intervention": "Zone 2 cardio training",
+        "result": "Excellent endurance improvement",
+        "confidence": 0.92,
+        "feedback": "Perfect combination of interventions",
+        "biometrics": {
+          "energy_level": 0.82,
+          "focus_score": 0.78,
+          "stress_level": 0.55,
+          "sleep_quality": 0.80,
+          "inflammation_markers": 0.35,
+          "metabolic_score": 0.80
+        }
+      },
+      {
+        "node_id": "user_1_1690345600",
+        "timestamp": "2025-08-05T10:00:00Z",
+        "bio_score": 85,
+        "cognitive_state": "optimized",
+        "intervention": "Add lion's mane supplement",
+        "result": "Enhanced mental clarity",
+        "confidence": 0.94,
+        "feedback": "Feeling better than ever",
+        "biometrics": {
+          "energy_level": 0.85,
+          "focus_score": 0.82,
+          "stress_level": 0.48,
+          "sleep_quality": 0.85,
+          "inflammation_markers": 0.32,
+          "metabolic_score": 0.83
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from_node": "user_1_1690000000",
+        "to_node": "user_1_1690086400",
+        "edge_type": "time",
+        "weight": 1.0,
+        "metadata": {
+          "adaptation_type": "initial"
+        }
+      },
+      {
+        "from_node": "user_1_1690086400",
+        "to_node": "user_1_1690172800",
+        "edge_type": "feedback",
+        "weight": 0.8,
+        "metadata": {
+          "adaptation_type": "routine_adjustment"
+        }
+      },
+      {
+        "from_node": "user_1_1690172800",
+        "to_node": "user_1_1690259200",
+        "edge_type": "feedback",
+        "weight": 0.9,
+        "metadata": {
+          "adaptation_type": "intensity_increase"
+        }
+      },
+      {
+        "from_node": "user_1_1690259200",
+        "to_node": "user_1_1690345600",
+        "edge_type": "feedback",
+        "weight": 0.95,
+        "metadata": {
+          "adaptation_type": "optimization"
+        }
+      }
+    ],
+    "insights": {
+      "resilience_growth": 0.18,
+      "adaptation_loops": 3,
+      "confidence_trend": 0.86
+    }
+  },
+  "user_2": {
+    "user_id": "user_2",
+    "nodes": [
+      {
+        "node_id": "user_2_1690000000",
+        "timestamp": "2025-08-01T10:00:00Z",
+        "bio_score": 68,
+        "cognitive_state": "fatigued",
+        "intervention": "Sleep optimization protocol",
+        "result": "Better sleep quality",
+        "confidence": 0.70,
+        "feedback": "Starting to sleep better",
+        "biometrics": {
+          "energy_level": 0.60,
+          "focus_score": 0.55,
+          "stress_level": 0.75,
+          "sleep_quality": 0.62,
+          "inflammation_markers": 0.48,
+          "metabolic_score": 0.65
+        }
+      },
+      {
+        "node_id": "user_2_1690086400",
+        "timestamp": "2025-08-02T10:00:00Z",
+        "bio_score": 71,
+        "cognitive_state": "recovering",
+        "intervention": "Magnesium + CBD protocol",
+        "result": "Reduced stress levels",
+        "confidence": 0.75,
+        "feedback": "Feeling more relaxed",
+        "biometrics": {
+          "energy_level": 0.65,
+          "focus_score": 0.60,
+          "stress_level": 0.68,
+          "sleep_quality": 0.70,
+          "inflammation_markers": 0.45,
+          "metabolic_score": 0.68
+        }
+      },
+      {
+        "node_id": "user_2_1690172800",
+        "timestamp": "2025-08-03T10:00:00Z",
+        "bio_score": 75,
+        "cognitive_state": "balanced",
+        "intervention": "Morning light therapy",
+        "result": "Better circadian rhythm",
+        "confidence": 0.82,
+        "feedback": "Energy levels improving",
+        "biometrics": {
+          "energy_level": 0.72,
+          "focus_score": 0.68,
+          "stress_level": 0.62,
+          "sleep_quality": 0.76,
+          "inflammation_markers": 0.42,
+          "metabolic_score": 0.72
+        }
+      },
+      {
+        "node_id": "user_2_1690259200",
+        "timestamp": "2025-08-04T10:00:00Z",
+        "bio_score": 79,
+        "cognitive_state": "energized",
+        "intervention": "Mitochondrial support stack",
+        "result": "Significant energy improvement",
+        "confidence": 0.88,
+        "feedback": "Finally feeling like myself again",
+        "biometrics": {
+          "energy_level": 0.78,
+          "focus_score": 0.75,
+          "stress_level": 0.58,
+          "sleep_quality": 0.80,
+          "inflammation_markers": 0.38,
+          "metabolic_score": 0.76
+        }
+      },
+      {
+        "node_id": "user_2_1690345600",
+        "timestamp": "2025-08-05T10:00:00Z",
+        "bio_score": 82,
+        "cognitive_state": "thriving",
+        "intervention": "Neurofeedback training",
+        "result": "Optimal cognitive performance",
+        "confidence": 0.90,
+        "feedback": "Best I've felt in years",
+        "biometrics": {
+          "energy_level": 0.82,
+          "focus_score": 0.80,
+          "stress_level": 0.52,
+          "sleep_quality": 0.85,
+          "inflammation_markers": 0.35,
+          "metabolic_score": 0.80
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from_node": "user_2_1690000000",
+        "to_node": "user_2_1690086400",
+        "edge_type": "time",
+        "weight": 1.0,
+        "metadata": {
+          "adaptation_type": "initial"
+        }
+      },
+      {
+        "from_node": "user_2_1690086400",
+        "to_node": "user_2_1690172800",
+        "edge_type": "feedback",
+        "weight": 0.85,
+        "metadata": {
+          "adaptation_type": "stress_reduction"
+        }
+      },
+      {
+        "from_node": "user_2_1690172800",
+        "to_node": "user_2_1690259200",
+        "edge_type": "feedback",
+        "weight": 0.88,
+        "metadata": {
+          "adaptation_type": "energy_optimization"
+        }
+      },
+      {
+        "from_node": "user_2_1690259200",
+        "to_node": "user_2_1690345600",
+        "edge_type": "feedback",
+        "weight": 0.92,
+        "metadata": {
+          "adaptation_type": "cognitive_enhancement"
+        }
+      }
+    ],
+    "insights": {
+      "resilience_growth": 0.21,
+      "adaptation_loops": 3,
+      "confidence_trend": 0.81
+    }
+  }
+}

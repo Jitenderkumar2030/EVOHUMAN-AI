@@ -1,0 +1,119 @@
+name: user_privacy_config
+description: Privacy and data retention settings for EvoHuman.AI users
+
+defaults:
+  data_retention_days: 365  # Default 1 year retention
+  training_participation: "local_only"  # local_only, federated, or opt_out
+  data_backup_frequency: "weekly"
+  export_format: "json"
+
+# Privacy tiers
+privacy_tiers:
+  strict:
+    data_retention_days: 90
+    training_participation: "local_only"
+    allowed_data_types:
+      - "interventions"
+      - "feedback"
+      - "scores"
+    exclude_data_types:
+      - "biometrics"
+      - "genetic"
+    backup_encryption: true
+
+  balanced:
+    data_retention_days: 365
+    training_participation: "federated"
+    allowed_data_types:
+      - "interventions"
+      - "feedback"
+      - "scores"
+      - "biometrics"
+    exclude_data_types:
+      - "genetic"
+    backup_encryption: true
+
+  research_participant:
+    data_retention_days: 730
+    training_participation: "federated"
+    allowed_data_types: "all"
+    backup_encryption: true
+    research_consent: true
+
+# Data retention policies
+retention_policies:
+  evolution_graph:
+    min_retention_days: 90
+    max_retention_days: 730
+    backup_required: true
+
+  biometric_data:
+    min_retention_days: 30
+    max_retention_days: 365
+    backup_required: true
+
+  feedback_data:
+    min_retention_days: 90
+    max_retention_days: 730
+    backup_required: true
+
+# Export settings
+export_settings:
+  formats:
+    - json
+    - yaml
+    - csv
+  
+  included_data:
+    - evolution_graph
+    - interventions
+    - feedback
+    - metrics
+    - preferences
+
+  encryption:
+    required: true
+    algorithm: "AES-256-GCM"
+
+# Backup configuration
+backup_config:
+  frequency:
+    - "daily"
+    - "weekly"
+    - "monthly"
+  
+  retention:
+    daily: 7  # days
+    weekly: 4  # weeks
+    monthly: 6  # months
+
+  storage:
+    type: "local"  # local or cloud
+    encryption_required: true
+    compression: true
+
+# Federated learning settings
+federated_learning:
+  enabled: true
+  min_users_per_round: 10
+  max_users_per_round: 100
+  aggregation_frequency: "daily"
+  privacy_preserving_techniques:
+    - "differential_privacy"
+    - "secure_aggregation"
+
+# Compliance settings
+compliance:
+  gdpr_compliant: true
+  ccpa_compliant: true
+  hipaa_compliant: true
+  
+  data_subject_rights:
+    access: true
+    rectification: true
+    erasure: true
+    portability: true
+    
+  audit_logging:
+    enabled: true
+    retention_days: 90

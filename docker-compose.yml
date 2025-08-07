@@ -1,0 +1,147 @@
+version: '3.8'
+
+services:
+  # API Gateway & Authentication
+  gateway:
+    build: ./services/gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://evohuman:evohuman@postgres:5432/evohuman
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=your-jwt-secret-change-in-production
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./configs:/app/configs
+      - ./shared:/app/shared
+
+  # BioDigital Twin Engine
+  bio-twin:
+    build: ./services/bio-twin
+    ports:
+      - "8001:8000"
+    environment:
+      - DATABASE_URL=postgresql://evohuman:evohuman@postgres:5432/evohuman
+      - REDIS_URL=redis://redis:6379
+      - ESM3_SERVICE_URL=http://esm3-service:8000
+      - PROTEUS_SERVICE_URL=http://proteus-service:8000
+      - AICE_SERVICE_URL=http://aice-service:8000
+      - SYMBIOTIC_SERVICE_URL=http://symbiotic-service:8000
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./configs:/app/configs
+      - ./shared:/app/shared
+      - ./data:/app/data
+
+  # ESM3 Bio-Intelligence Service
+  esm3-service:
+    build: ./services/esm3-service
+    ports:
+      - "8002:8000"
+    environment:
+      - MODEL_PATH=/app/models/esm3
+      - EXOSTACK_SERVICE_URL=http://exostack-service:8000
+    volumes:
+      - ./models:/app/models
+      - ./configs:/app/configs
+      - ./shared:/app/shared
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # Proteus Bio-Framework Service
+  proteus-service:
+    build: ./services/proteus-service
+    ports:
+      - "8003:8000"
+    environment:
+      - MODEL_PATH=/app/models/proteus
+      - EXOSTACK_SERVICE_URL=http://exostack-service:8000
+    volumes:
+      - ./models:/app/models
+      - ./configs:/app/configs
+      - ./shared:/app/shared
+
+  # AiCE Cognitive Engine Service
+  aice-service:
+    build: ./services/aice-service
+    ports:
+      - "8004:8000"
+    environment:
+      - MODEL_PATH=/app/models/aice
+      - EXOSTACK_SERVICE_URL=http://exostack-service:8000
+    volumes:
+      - ./models:/app/models
+      - ./configs:/app/configs
+      - ./shared:/app/shared
+
+  # SymbioticAIS Evolution Service
+  symbiotic-service:
+    build: ./services/symbiotic-service
+    ports:
+      - "8005:8000"
+    environment:
+      - MODEL_PATH=/app/models/symbiotic
+      - EXOSTACK_SERVICE_URL=http://exostack-service:8000
+    volumes:
+      - ./models:/app/models
+      - ./configs:/app/configs
+      - ./shared:/app/shared
+
+  # ExoStack Distributed Compute Service
+  exostack-service:
+    build: ./services/exostack-service
+    ports:
+      - "8006:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - NODE_REGISTRY_PATH=/app/data/nodes
+    volumes:
+      - ./configs:/app/configs
+      - ./shared:/app/shared
+      - ./data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  # React Dashboard UI
+  ui:
+    build: ./ui
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+    volumes:
+      - ./ui:/app
+      - /app/node_modules
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=evohuman
+      - POSTGRES_USER=evohuman
+      - POSTGRES_PASSWORD=evohuman
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "5432:5432"
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:

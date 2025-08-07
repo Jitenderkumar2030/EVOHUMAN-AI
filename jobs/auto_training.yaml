@@ -1,0 +1,109 @@
+name: evohuman_auto_training
+description: Scheduled training jobs for EvoHuman.AI models
+
+jobs:
+  # AiCE Cognitive Model Training
+  - name: train_aice_cognitive
+    schedule: "0 2 * * 0"  # Weekly on Sunday at 2 AM
+    type: training
+    service: aice
+    endpoint: /train
+    compute:
+      provider: exostack
+      resources:
+        gpu: 1
+        memory: "32G"
+    params:
+      batch_size: 64
+      epochs: 10
+      learning_rate: 0.001
+
+  # Proteus Biological Simulation Training
+  - name: train_proteus_simulator
+    schedule: "0 3 * * 0"  # Weekly on Sunday at 3 AM
+    type: training
+    service: proteus
+    endpoint: /train
+    compute:
+      provider: exostack
+      resources:
+        gpu: 2
+        memory: "64G"
+    params:
+      simulation_iterations: 1000
+      validation_split: 0.2
+
+  # ESM3 Model Fine-tuning
+  - name: finetune_esm3
+    schedule: "0 1 * * 0"  # Weekly on Sunday at 1 AM
+    type: training
+    service: esm3
+    endpoint: /finetune
+    compute:
+      provider: exostack
+      resources:
+        gpu: 4
+        memory: "128G"
+    params:
+      sequences_per_batch: 32
+      gradient_accumulation: 4
+
+  # SymbioticAIS Feedback Learning
+  - name: train_symbiotic_feedback
+    schedule: "0 */6 * * *"  # Every 6 hours
+    type: training
+    service: symbiotic
+    endpoint: /train
+    compute:
+      provider: local
+      resources:
+        memory: "16G"
+    params:
+      feedback_window_days: 7
+      min_samples: 100
+
+  # Vector Store Maintenance
+  - name: maintain_vector_store
+    schedule: "0 4 * * *"  # Daily at 4 AM
+    type: maintenance
+    service: shared
+    endpoint: /vectors/maintain
+    compute:
+      provider: local
+    params:
+      index_type: "faiss"
+      rebuild_index: false
+      prune_old_vectors: true
+      max_vector_age_days: 90
+
+monitoring:
+  metrics:
+    - name: training_success_rate
+      threshold: 0.95
+      window: 24h
+    - name: model_improvement
+      threshold: 0.02
+      window: 7d
+    - name: gpu_utilization
+      threshold: 0.85
+      window: 1h
+
+alerts:
+  - name: training_failure
+    condition: "success_rate < 0.9"
+    channels: ["slack", "email"]
+    cooldown: 3600
+
+  - name: performance_degradation
+    condition: "improvement < 0"
+    channels: ["slack"]
+    cooldown: 86400
+
+storage:
+  checkpoints:
+    path: "/data/model_checkpoints"
+    retention_days: 30
+  
+  logs:
+    path: "/data/training_logs"
+    retention_days: 90

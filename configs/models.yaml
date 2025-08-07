@@ -1,0 +1,158 @@
+# EvoHuman.AI Model Configurations
+# YAML templates for different AI models and compute jobs
+
+# ESM3 Protein Modeling Configuration
+esm3:
+  model_name: "esm3_sm_open_v1"
+  model_path: "/app/models/esm3"
+  compute_requirements:
+    gpu_memory: "8GB"
+    cpu_cores: 4
+    ram: "16GB"
+  parameters:
+    max_sequence_length: 1024
+    batch_size: 8
+    temperature: 0.7
+    top_k: 50
+  tasks:
+    - protein_structure_prediction
+    - protein_evolution_analysis
+    - synthetic_protein_design
+    - mutation_effect_prediction
+
+# Proteus Biological Framework Configuration  
+proteus:
+  model_name: "proteus_bio_v1"
+  model_path: "/app/models/proteus"
+  compute_requirements:
+    gpu_memory: "6GB"
+    cpu_cores: 8
+    ram: "12GB"
+  parameters:
+    simulation_steps: 1000
+    cell_types: ["stem", "neural", "cardiac", "hepatic"]
+    regeneration_factors: ["growth", "repair", "adaptation"]
+  tasks:
+    - cellular_simulation
+    - tissue_regeneration_modeling
+    - organ_synthesis_planning
+    - aging_reversal_pathways
+
+# AiCE Cognitive Enhancement Configuration
+aice:
+  model_name: "aice_cognitive_v1"
+  model_path: "/app/models/aice"
+  compute_requirements:
+    gpu_memory: "4GB"
+    cpu_cores: 6
+    ram: "8GB"
+  parameters:
+    memory_depth: 10
+    reasoning_layers: 12
+    intuition_threshold: 0.75
+    wisdom_integration: true
+  tasks:
+    - cognitive_assessment
+    - memory_enhancement
+    - learning_optimization
+    - meditation_guidance
+    - purpose_alignment
+
+# SymbioticAIS Evolution Engine Configuration
+symbiotic:
+  model_name: "symbiotic_evolution_v1"
+  model_path: "/app/models/symbiotic"
+  compute_requirements:
+    gpu_memory: "6GB"
+    cpu_cores: 4
+    ram: "10GB"
+  parameters:
+    feedback_loops: 5
+    evolution_rate: 0.1
+    human_weight: 0.7
+    ai_weight: 0.3
+    adaptation_threshold: 0.8
+  tasks:
+    - human_ai_feedback_processing
+    - evolution_strategy_optimization
+    - digital_twin_updating
+    - symbiotic_learning
+
+# Distributed Compute Job Templates
+job_templates:
+  
+  # Bio-Twin Analysis Job
+  bio_twin_analysis:
+    name: "Bio-Twin Comprehensive Analysis"
+    description: "Full biological and cognitive analysis using all AI models"
+    services: ["esm3", "proteus", "aice", "symbiotic"]
+    execution_order: "parallel"
+    timeout_minutes: 30
+    retry_attempts: 2
+    resource_requirements:
+      total_gpu_memory: "24GB"
+      total_cpu_cores: 16
+      total_ram: "32GB"
+    
+  # Longevity Simulation Job
+  longevity_simulation:
+    name: "Longevity Scenario Simulation"
+    description: "Simulate aging and longevity interventions"
+    services: ["esm3", "proteus"]
+    execution_order: "sequential"
+    timeout_minutes: 45
+    retry_attempts: 1
+    resource_requirements:
+      total_gpu_memory: "14GB"
+      total_cpu_cores: 12
+      total_ram: "28GB"
+  
+  # Cognitive Enhancement Job
+  cognitive_enhancement:
+    name: "Cognitive Enhancement Analysis"
+    description: "Analyze and optimize cognitive functions"
+    services: ["aice", "symbiotic"]
+    execution_order: "sequential"
+    timeout_minutes: 20
+    retry_attempts: 2
+    resource_requirements:
+      total_gpu_memory: "10GB"
+      total_cpu_cores: 10
+      total_ram: "18GB"
+  
+  # Evolution Planning Job
+  evolution_planning:
+    name: "Personal Evolution Planning"
+    description: "Create comprehensive evolution roadmap"
+    services: ["esm3", "proteus", "aice", "symbiotic"]
+    execution_order: "mixed"  # Some parallel, some sequential
+    timeout_minutes: 60
+    retry_attempts: 1
+    resource_requirements:
+      total_gpu_memory: "24GB"
+      total_cpu_cores: 20
+      total_ram: "40GB"
+
+# Node Selection Criteria
+node_selection:
+  preferred_regions: ["local", "edge", "cloud"]
+  latency_threshold_ms: 100
+  reliability_threshold: 0.95
+  cost_optimization: true
+  privacy_level: "high"  # high, medium, low
+  
+# Security and Privacy Settings
+security:
+  encryption_at_rest: true
+  encryption_in_transit: true
+  data_retention_days: 90
+  user_consent_required: true
+  anonymization_level: "partial"  # full, partial, none
+  
+# Monitoring and Logging
+monitoring:
+  metrics_collection: true
+  performance_tracking: true
+  error_reporting: true
+  usage_analytics: false  # Privacy-first approach
+  log_level: "INFO"  # DEBUG, INFO, WARNING, ERROR

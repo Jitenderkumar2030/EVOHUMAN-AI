@@ -1,0 +1,416 @@
+version: '3.8'
+
+services:
+  # Load Balancer
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: evohuman-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/logs:/var/log/nginx
+    depends_on:
+      - frontend
+      - api-gateway
+    networks:
+      - evohuman-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend
+  frontend:
+    build:
+      context: ../ui
+      dockerfile: Dockerfile.prod
+    container_name: evohuman-frontend
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_API_URL=https://api.evohuman.ai
+      - REACT_APP_WS_URL=wss://api.evohuman.ai
+    volumes:
+      - frontend-build:/app/build
+    networks:
+      - evohuman-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: ../
+      dockerfile: Dockerfile.gateway
+    container_name: evohuman-gateway
+    environment:
+      - APP_ENV=production
+      - LOG_LEVEL=INFO
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=${JWT_SECRET}
+      - RATE_LIMIT_REQUESTS=1000
+      - RATE_LIMIT_WINDOW=3600
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+      - prometheus
+    networks:
+      - evohuman-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # AiCE Service
+  aice-service:
+    build:
+      context: ../services/aice-service
+      dockerfile: Dockerfile.prod
+    container_name: evohuman-aice
+    environment:
+      - APP_ENV=production
+      - REDIS_URL=redis://redis:6379
+      - POSTGRES_URL=${POSTGRES_URL}
+      - LOG_LEVEL=INFO
+      - WORKER_PROCESSES=4
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - evohuman-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Proteus Service
+  proteus-service:
+    build:
+      context: ../services/proteus-service
+      dockerfile: Dockerfile.prod
+    container_name: evohuman-proteus
+    environment:
+      - APP_ENV=production
+      - REDIS_URL=redis://redis:6379
+      - LOG_LEVEL=INFO
+      - SIMULATION_WORKERS=8
+    depends_on:
+      - redis
+    networks:
+      - evohuman-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 8G
+        reservations:
+          cpus: '2.0'
+          memory: 4G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ESM3 Service
+  esm3-service:
+    build:
+      context: ../services/esm3-service
+      dockerfile: Dockerfile.prod
+    container_name: evohuman-esm3
+    environment:
+      - APP_ENV=production
+      - REDIS_URL=redis://redis:6379
+      - LOG_LEVEL=INFO
+      - MODEL_CACHE_SIZE=10GB
+    depends_on:
+      - redis
+    networks:
+      - evohuman-network
+    restart: unless-stopped
+    volumes:
+      - esm3-models:/app/models
+      - esm3-cache:/app/cache
+    deploy:
+      resources:
+        limits:
+          cpus: '6.0'
+          memory: 16G
+        reservations:
+          cpus: '4.0'
+          memory: 8G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 60s
+      timeout: 30s
+      retries: 3
+
+  # SymbioticAIS Service
+  symbiotic-service:
+    build:
+      context: ../services/symbiotic-service
+      dockerfile: Dockerfile.prod
+    container_name: evohuman-symbiotic
+    environment:
+      - APP_ENV=production
+      - REDIS_URL=redis://redis:6379
+      - LOG_LEVEL=INFO
+      - AGENT_WORKERS=4
+    depends_on:
+      - redis
+    networks:
+      - evohuman-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '3.0'
+          memory: 6G
+        reservations:
+          cpus: '1.5'
+          memory: 3G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Bio-Twin Service
+  bio-twin-service:
+    build:
+      context: ../services/bio-twin-service
+      dockerfile: Dockerfile.prod
+    container_name: evohuman-bio-twin
+    environment:
+      - APP_ENV=production
+      - REDIS_URL=redis://redis:6379
+      - POSTGRES_URL=${POSTGRES_URL}
+      - LOG_LEVEL=INFO
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - evohuman-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ExoStack Service
+  exostack-service:
+    build:
+      context: ../services/exostack-service
+      dockerfile: Dockerfile.prod
+    container_name: evohuman-exostack
+    environment:
+      - APP_ENV=production
+      - REDIS_URL=redis://redis:6379
+      - LOG_LEVEL=INFO
+    depends_on:
+      - redis
+    networks:
+      - evohuman-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis
+  redis:
+    image: redis:7.2-alpine
+    container_name: evohuman-redis
+    command: redis-server --appendonly yes --maxmemory 2gb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks:
+      - evohuman-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: evohuman-postgres
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - evohuman-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: evohuman-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - evohuman-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Grafana
+  grafana:
+    image: grafana/grafana:10.1.0
+    container_name: evohuman-grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - evohuman-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Elasticsearch (for logging)
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0
+    container_name: evohuman-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - xpack.security.enabled=false
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - evohuman-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Kibana (for log visualization)
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.10.0
+    container_name: evohuman-kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - evohuman-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Filebeat (for log shipping)
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.10.0
+    container_name: evohuman-filebeat
+    user: root
+    volumes:
+      - ./monitoring/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - elasticsearch
+    networks:
+      - evohuman-network
+    restart: unless-stopped
+
+volumes:
+  frontend-build:
+  redis-data:
+  postgres-data:
+  prometheus-data:
+  grafana-data:
+  elasticsearch-data:
+  esm3-models:
+  esm3-cache:
+
+networks:
+  evohuman-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

@@ -1,0 +1,223 @@
+# ExoStack Job Execution Templates for EvoHuman.AI
+# These templates define how AI workloads are distributed across compute nodes
+
+# Job Execution Patterns
+execution_patterns:
+  
+  # Real-time Bio-Twin Update
+  realtime_bio_twin:
+    job_type: "realtime_analysis"
+    priority: "high"
+    max_latency_ms: 500
+    resource_allocation:
+      cpu_cores: 4
+      gpu_memory: "4GB"
+      ram: "8GB"
+    scaling:
+      min_nodes: 1
+      max_nodes: 3
+      scale_trigger: "queue_depth > 5"
+    data_flow:
+      input_sources: ["user_metrics", "sensor_data"]
+      output_targets: ["bio_twin_db", "user_dashboard"]
+      streaming: true
+    
+  # Deep Evolution Analysis
+  deep_evolution_analysis:
+    job_type: "batch_analysis"
+    priority: "medium"
+    max_latency_ms: 30000
+    resource_allocation:
+      cpu_cores: 8
+      gpu_memory: "12GB"
+      ram: "24GB"
+    scaling:
+      min_nodes: 2
+      max_nodes: 5
+      scale_trigger: "processing_time > 20min"
+    data_flow:
+      input_sources: ["historical_data", "genetic_profiles"]
+      output_targets: ["evolution_plans", "recommendations_db"]
+      streaming: false
+      
+  # Distributed Model Training
+  model_training:
+    job_type: "training"
+    priority: "low"
+    max_latency_ms: 3600000  # 1 hour
+    resource_allocation:
+      cpu_cores: 16
+      gpu_memory: "24GB"
+      ram: "64GB"
+    scaling:
+      min_nodes: 3
+      max_nodes: 10
+      scale_trigger: "dataset_size > 1GB"
+    data_flow:
+      input_sources: ["training_datasets", "model_checkpoints"]
+      output_targets: ["model_registry", "performance_metrics"]
+      streaming: false
+
+# Specific Job Definitions
+jobs:
+  
+  # ESM3 Protein Analysis Job
+  esm3_protein_analysis:
+    extends: "deep_evolution_analysis"
+    name: "ESM3 Protein Structure Analysis"
+    docker_image: "evohuman/esm3-service:latest"
+    command: ["python", "analyze_proteins.py"]
+    environment:
+      MODEL_PATH: "/models/esm3"
+      BATCH_SIZE: "8"
+      MAX_SEQUENCE_LENGTH: "1024"
+    volumes:
+      - "/data/proteins:/app/data"
+      - "/models/esm3:/models/esm3"
+    node_requirements:
+      gpu_type: ["nvidia-tesla", "nvidia-rtx"]
+      min_gpu_memory: "8GB"
+      architecture: "x86_64"
+    
+  # Proteus Cellular Simulation Job
+  proteus_cell_simulation:
+    extends: "deep_evolution_analysis"
+    name: "Proteus Cellular Simulation"
+    docker_image: "evohuman/proteus-service:latest"
+    command: ["python", "simulate_cells.py"]
+    environment:
+      SIMULATION_STEPS: "1000"
+      CELL_TYPES: "stem,neural,cardiac"
+      OUTPUT_FORMAT: "json"
+    volumes:
+      - "/data/simulations:/app/output"
+      - "/models/proteus:/models/proteus"
+    node_requirements:
+      cpu_cores: 8
+      min_ram: "16GB"
+      
+  # AiCE Cognitive Enhancement Job
+  aice_cognitive_analysis:
+    extends: "realtime_bio_twin"
+    name: "AiCE Cognitive Enhancement"
+    docker_image: "evohuman/aice-service:latest"
+    command: ["python", "enhance_cognition.py"]
+    environment:
+      MEMORY_DEPTH: "10"
+      REASONING_LAYERS: "12"
+      REAL_TIME_MODE: "true"
+    volumes:
+      - "/data/cognitive:/app/data"
+      - "/models/aice:/models/aice"
+    node_requirements:
+      low_latency: true
+      edge_preferred: true
+      
+  # SymbioticAIS Feedback Processing Job
+  symbiotic_feedback:
+    extends: "realtime_bio_twin"
+    name: "SymbioticAIS Feedback Processing"
+    docker_image: "evohuman/symbiotic-service:latest"
+    command: ["python", "process_feedback.py"]
+    environment:
+      FEEDBACK_LOOPS: "5"
+      HUMAN_WEIGHT: "0.7"
+      AI_WEIGHT: "0.3"
+    volumes:
+      - "/data/feedback:/app/data"
+      - "/models/symbiotic:/models/symbiotic"
+    node_requirements:
+      privacy_level: "high"
+      local_preferred: true
+
+# Workflow Definitions
+workflows:
+  
+  # Complete Bio-Twin Analysis Workflow
+  complete_bio_twin_analysis:
+    name: "Complete Bio-Twin Analysis"
+    description: "Full pipeline for bio-digital twin analysis"
+    steps:
+      - name: "data_preprocessing"
+        job: "data_preprocessing"
+        depends_on: []
+        
+      - name: "esm3_analysis"
+        job: "esm3_protein_analysis"
+        depends_on: ["data_preprocessing"]
+        
+      - name: "proteus_simulation"
+        job: "proteus_cell_simulation"
+        depends_on: ["data_preprocessing"]
+        parallel_with: ["esm3_analysis"]
+        
+      - name: "aice_cognitive"
+        job: "aice_cognitive_analysis"
+        depends_on: ["data_preprocessing"]
+        parallel_with: ["esm3_analysis", "proteus_simulation"]
+        
+      - name: "symbiotic_integration"
+        job: "symbiotic_feedback"
+        depends_on: ["esm3_analysis", "proteus_simulation", "aice_cognitive"]
+        
+      - name: "results_aggregation"
+        job: "aggregate_results"
+        depends_on: ["symbiotic_integration"]
+    
+    failure_handling:
+      retry_failed_steps: true
+      max_retries: 2
+      fallback_strategy: "partial_results"
+      
+    monitoring:
+      progress_tracking: true
+      performance_metrics: true
+      cost_tracking: true
+
+# Node Management
+node_management:
+  
+  # Auto-scaling rules
+  auto_scaling:
+    scale_up_threshold: 0.8  # CPU/GPU utilization
+    scale_down_threshold: 0.3
+    cooldown_period_minutes: 5
+    max_nodes_per_job: 10
+    
+  # Health monitoring
+  health_checks:
+    interval_seconds: 30
+    timeout_seconds: 10
+    failure_threshold: 3
+    recovery_actions: ["restart", "migrate", "alert"]
+    
+  # Resource optimization
+  resource_optimization:
+    bin_packing_algorithm: "best_fit"
+    resource_fragmentation_threshold: 0.2
+    idle_node_timeout_minutes: 15
+    cost_optimization_enabled: true
+
+# Security and Compliance
+security:
+  
+  # Data protection
+  data_protection:
+    encryption_at_rest: true
+    encryption_in_transit: true
+    key_rotation_days: 30
+    data_locality_enforcement: true
+    
+  # Access control
+  access_control:
+    rbac_enabled: true
+    api_key_required: true
+    rate_limiting: "100/minute"
+    audit_logging: true
+    
+  # Privacy compliance
+  privacy:
+    gdpr_compliance: true
+    data_anonymization: "automatic"
+    consent_tracking: true
+    right_to_deletion: true

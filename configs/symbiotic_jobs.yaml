@@ -1,0 +1,41 @@
+name: symbiotic_training
+description: Scheduled reinforcement learning tasks for SymbioticAIS
+
+jobs:
+  - name: update_user_models
+    schedule: "0 */4 * * *"  # Every 4 hours
+    type: batch
+    service: symbiotic
+    endpoint: /internal/batch_train
+    params:
+      batch_size: 100
+      min_feedback_count: 5
+
+  - name: prune_old_vectors
+    schedule: "0 0 * * *"  # Daily at midnight
+    type: maintenance
+    service: symbiotic
+    endpoint: /internal/prune_vectors
+    params:
+      max_age_days: 30
+      min_confidence: 0.7
+
+  - name: export_learning_stats
+    schedule: "0 0 * * 0"  # Weekly on Sunday
+    type: analytics
+    service: symbiotic
+    endpoint: /internal/export_stats
+    params:
+      format: json
+      include_metrics: true
+
+alerts:
+  - name: low_confidence
+    condition: "avg_confidence < 0.6"
+    channels: ["slack", "email"]
+    cooldown: 3600  # 1 hour
+
+  - name: high_error_rate
+    condition: "error_rate > 0.1"
+    channels: ["slack", "email"]
+    cooldown: 1800  # 30 minutes

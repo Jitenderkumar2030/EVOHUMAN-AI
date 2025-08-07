@@ -1,0 +1,163 @@
+# ESM3 Service Configuration for EvoHuman.AI
+
+# Model Configuration
+model:
+  name: "esm3_sm_open_v1"
+  path: "/app/models/esm3"
+  download_url: "https://dl.fbaipublicfiles.com/fair-esm/models/"
+  
+  # Model variants (uncomment to use different sizes)
+  # name: "esm3_md_open_v1"  # Medium model (35M parameters)
+  # name: "esm3_lg_open_v1"  # Large model (150M parameters)
+  
+  # Local model loading
+  local_model_path: "/app/models/esm3/pytorch_model.bin"
+  force_download: false  # Set to true to re-download model
+
+# Inference Parameters
+inference:
+  max_sequence_length: 1024
+  batch_size: 8
+  temperature: 0.7
+  top_k: 50
+  device: "auto"  # auto, cpu, cuda
+  precision: "float32"  # float32, float16
+  
+  # Memory optimization
+  gradient_checkpointing: true
+  low_memory_mode: false
+  
+  # Caching
+  cache_predictions: true
+  cache_size_mb: 512
+
+# Analysis Settings
+analysis:
+  # Structure prediction
+  structure_prediction:
+    return_contacts: true
+    contact_threshold: 0.5
+    confidence_threshold: 0.7
+    
+  # Mutation analysis
+  mutation_analysis:
+    max_mutations_per_request: 50
+    stability_threshold: 0.1
+    batch_mutations: true
+    
+  # Evolution analysis
+  evolution_analysis:
+    max_pathways: 5
+    optimization_steps: 10
+    confidence_threshold: 0.6
+
+# Performance Settings
+performance:
+  # Threading
+  max_workers: 2
+  thread_pool_size: 4
+  
+  # Timeouts (seconds)
+  inference_timeout: 300
+  batch_timeout: 600
+  
+  # Resource limits
+  max_memory_gb: 8
+  gpu_memory_fraction: 0.8
+
+# Logging and Monitoring
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  log_predictions: false
+  log_performance: true
+  
+monitoring:
+  enable_metrics: true
+  metrics_port: 9090
+  health_check_interval: 30
+
+# Integration Settings
+integration:
+  # ExoStack distributed computing
+  exostack:
+    enabled: true
+    job_queue: "esm3_jobs"
+    max_distributed_jobs: 10
+    
+  # Bio-Twin engine
+  bio_twin:
+    auto_register: true
+    callback_url: "http://bio-twin:8000/esm3/callback"
+    
+  # Gateway service
+  gateway:
+    register_endpoints: true
+    auth_required: true
+
+# Data Management
+data:
+  # Input validation
+  validation:
+    min_sequence_length: 10
+    max_sequence_length: 2048
+    allowed_amino_acids: "ACDEFGHIKLMNPQRSTVWY"
+    
+  # Output formatting
+  output:
+    include_metadata: true
+    precision_digits: 4
+    compress_large_results: true
+    
+  # Storage
+  storage:
+    cache_directory: "/app/data/cache"
+    results_directory: "/app/data/results"
+    models_directory: "/app/models"
+    retention_days: 30
+
+# Security and Privacy
+security:
+  # Data encryption
+  encrypt_results: true
+  encryption_key_path: "/app/configs/encryption.key"
+  
+  # Access control
+  rate_limiting:
+    requests_per_minute: 60
+    burst_size: 10
+    
+  # Privacy
+  anonymize_sequences: false
+  log_user_data: false
+  gdpr_compliance: true
+
+# Development and Testing
+development:
+  mock_mode: false  # Set to true for development without ESM3 model
+  debug_mode: false
+  profiling_enabled: false
+  
+  # Testing
+  test_sequences:
+    - "MKTVRQERLKSIVRILERSKEPVSGAQLAEELSVSRQVIVQDIAYLRSLGYNIVATPRGYVLAGG"
+    - "MKLLNVINFVFLMFVSSSKILGVNLWLRQPNLAINQENDFVLVAMKMNIRQVAQGHQETVLQMYGCNLGMTQGRQMLLKIASQAKKNNLNVINFVFLMFVSSSKILGVNLWLRQPNLAINQENDFVLVAMKMNIRQVAQGHQETVLQMYGCNLGMTQGRQMLLKIASQAKKNNL"
+
+# Error Handling
+error_handling:
+  retry_attempts: 3
+  retry_delay: 1.0
+  fallback_to_mock: true
+  
+  # Error reporting
+  report_errors: true
+  error_webhook: null  # URL for error notifications
+  
+# Feature Flags
+features:
+  batch_processing: true
+  distributed_inference: true
+  real_time_analysis: true
+  mutation_scanning: true
+  evolution_prediction: true
+  contact_prediction: true
+  embedding_generation: true
